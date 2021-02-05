@@ -1,0 +1,8 @@
+labels:
+  osid: ubuntu
+actions:
+  - link:
+      path: /lib/x86_64-linux-gnu/libpcre.so.3
+      target: /lib/x86_64-linux-gnu/libpcre.so.1
+
+

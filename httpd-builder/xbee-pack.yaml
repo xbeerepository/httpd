@@ -1,0 +1,50 @@
+schema-version: 1.0
+
+type: builder
+
+
+var:
+  name: apache2
+  version: 2.4.46
+  installDir: /usr/local
+
+provision:
+  - url:
+      from: https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
+      to: /usr/src
+      after:
+        cmds:
+          - ./configure
+          - make
+          - make install
+        directory: /usr/src/pcre-8.44
+  - url:
+      from: https://github.com/libexpat/libexpat/releases/download/R_2_2_10/expat-2.2.10.tar.gz
+      to: /usr/src
+      after:
+        cmds:
+          - ./configure --prefix={% installDir %}/expat
+          - make
+          - make install
+        directory: /usr/src/expat-2.2.10
+  - url:
+      from: http://archive.apache.org/dist/httpd/httpd-{% version %}.tar.gz
+      to: /usr/src
+  - url:
+      from: https://mirror.ibcp.fr/pub/apache//apr/apr-1.7.0.tar.gz
+      to: /usr/src
+      after: mv /usr/src/apr-1.7.0 /usr/src/httpd-{% version %}/srclib/apr
+  - url:
+      from: https://mirror.ibcp.fr/pub/apache//apr/apr-util-1.6.1.tar.gz
+      to: /usr/src
+      after: mv /usr/src/apr-util-1.6.1 /usr/src/httpd-{% version %}/srclib/apr-util
+
+
+build:
+  - shell:
+      cmds:
+        - ./configure --prefix={% installDir %}/{% name %} --with-included-apr --with-pcre={% installDir %}/pcre --with-expat={% installDir %}/expat
+        - make
+        - make install
+      directory: /usr/src/httpd-{% version %}
+  - download: "{% installDir %}/{% name %}"

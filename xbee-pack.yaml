@@ -1,0 +1,36 @@
+schema-version: 1.0
+
+builder:
+  origin: ./httpd-builder
+  var:
+    name: "{% name %}"
+    version: "{% version %}"
+    installDir: "{% installDir %}"
+var:
+  name: "apache2"
+  version: 2.4.46
+  installDir: /usr/local
+  httpPort: 8080
+
+port: "{% httpPort %}"
+
+
+provision:
+  - copy:
+      builder: "{% name %}"
+      todir: "{% installDir %}"
+  - copy:
+      template: httpd.conf
+      todir: "{% installDir %}/{% name %}/conf"
+  - copy:
+      template: httpd.so.conf
+      todir: /etc/ld.so.conf.d
+      after: ldconfig
+  - systempath: "{% installDir %}/{% name %}/bin"
+
+up: start
+down: stop
+
+command:
+  start: apachectl -k start
+  stop: apachectl -k stop
