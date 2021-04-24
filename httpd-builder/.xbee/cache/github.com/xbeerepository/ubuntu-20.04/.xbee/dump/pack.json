@@ -1,0 +1,15 @@
+{
+    "installDir": "/opt",
+    "ps1": "[\\u@\\H \\W]\\$",
+    "timezone": "Europe/Paris",
+    "xbee": {
+        "full": "20.04",
+        "major": "20",
+        "minor": "04",
+        "name": "ubuntu",
+        "origin": "https://github.com/xbeerepository/ubuntu.git",
+        "patch": "",
+        "tmp": "/tmp/xbeeTmp",
+        "version": "20.04"
+    }
+}

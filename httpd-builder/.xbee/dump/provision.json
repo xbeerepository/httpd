@@ -1,0 +1,117 @@
+{
+    "actions": [
+        {
+            "Pkg": {
+                "Repository": {},
+                "names": [
+                    "gcc gcc-c++"
+                ]
+            },
+            "labels": {
+                "osid": [
+                    "centos"
+                ]
+            }
+        },
+        {
+            "Pkg": {
+                "Repository": {},
+                "names": [
+                    "build-essential",
+                    "autoconf",
+                    "automake",
+                    "libtool",
+                    "bison",
+                    "re2c",
+                    "pkg-config",
+                    "libxml2",
+                    "libxml2-dev",
+                    "sqlite3",
+                    "libsqlite3-dev",
+                    "libcurl4-openssl-dev",
+                    "libpng-dev",
+                    "libonig-dev",
+                    "libzip-dev"
+                ],
+                "update": true
+            },
+            "labels": {
+                "osid": [
+                    "ubuntu"
+                ]
+            }
+        },
+        {
+            "Url": {
+                "from": {
+                    "location": "https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "Url": {
+                "from": {
+                    "location": "https://github.com/libexpat/libexpat/releases/download/R_2_2_10/expat-2.2.10.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "Url": {
+                "from": {
+                    "location": "http://archive.apache.org/dist/httpd/httpd-2.4.46.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "Url": {
+                "after": {
+                    "cmds": [
+                        "mv /usr/src/apr-1.7.0 /usr/src/httpd-2.4.46/srclib/apr"
+                    ]
+                },
+                "from": {
+                    "location": "https://mirror.ibcp.fr/pub/apache//apr/apr-1.7.0.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "Url": {
+                "after": {
+                    "cmds": [
+                        "mv /usr/src/apr-util-1.6.1 /usr/src/httpd-2.4.46/srclib/apr-util"
+                    ]
+                },
+                "from": {
+                    "location": "https://mirror.ibcp.fr/pub/apache//apr/apr-util-1.6.1.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "Url": {
+                "from": {
+                    "location": "https://github.com/php/php-src/archive/refs/tags/php-7.4.16.tar.gz"
+                },
+                "to": "/usr/src",
+                "unpack": true
+            }
+        },
+        {
+            "PersistentDirs": {},
+            "vmOnly": true
+        }
+    ],
+    "async": false,
+    "container": {
+        "create": true
+    }
+}

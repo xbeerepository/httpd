@@ -1,0 +1,16 @@
+{
+    "installDir": "/usr/local",
+    "name": "apache2",
+    "phpVersion": "7.4.16",
+    "version": "2.4.46",
+    "xbee": {
+        "full": "",
+        "major": "",
+        "minor": "",
+        "name": "httpd-builder",
+        "origin": "/home/eric/tmp/products/httpd/httpd-builder",
+        "patch": "",
+        "tmp": "/tmp/xbeeTmp",
+        "version": ""
+    }
+}

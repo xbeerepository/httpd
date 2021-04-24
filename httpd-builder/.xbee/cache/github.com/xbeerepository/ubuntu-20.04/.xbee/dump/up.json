@@ -1,0 +1,14 @@
+{
+    "actions": [
+        {
+            "shell": {
+                "cmds": [
+                    "hostnamectl set-hostname {{ .host.name }}"
+                ]
+            }
+        }
+    ],
+    "container": {
+        "create": true
+    }
+}

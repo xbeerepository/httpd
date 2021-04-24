@@ -1,7 +1,6 @@
 labels:
   osid: ubuntu
 actions:
-  - pkg: build-essential
-
-
-
+  - pkg:
+      update: true 
+      name: build-essential autoconf automake libtool bison re2c pkg-config libxml2 libxml2-dev sqlite3 libsqlite3-dev libcurl4-openssl-dev libpng-dev libonig-dev libzip-dev

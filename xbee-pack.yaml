@@ -6,27 +6,44 @@ builder:
     name: "{% name %}"
     version: "{% version %}"
     installDir: "{% installDir %}"
+
+const:
+  apacheHome: "{% installDir %}/{% name %}"
+  documentRoot: "{% apacheHome %}/htdocs"
 var:
   name: "apache2"
   version: 2.4.46
   installDir: /usr/local
   httpPort: 8080
+  user: default
+  group: default
 
 port: "{% httpPort %}"
 
-
 provision:
+  - group: "{% group %}"
+  - user: 
+      name: "{% user %}"
+      group: "{% group %}"
   - copy:
       builder: "{% name %}"
       todir: "{% installDir %}"
   - copy:
+      builder: php
+      todir: "{% installDir %}"
+  - copy:
       template: httpd.conf
-      todir: "{% installDir %}/{% name %}/conf"
+      todir: "{% apacheHome %}/conf"
   - copy:
       template: httpd.so.conf
       todir: /etc/ld.so.conf.d
       after: ldconfig
-  - systempath: "{% installDir %}/{% name %}/bin"
+  - systempath: "{% apacheHome %}/bin"
+
+deploy:
+  - copy:
+      resource: index.php
+      todir: "{% documentRoot %}"
 
 up: start
 down: stop

@@ -6,27 +6,16 @@ type: builder
 var:
   name: apache2
   version: 2.4.46
+  phpVersion: 7.4.16
   installDir: /usr/local
 
 provision:
   - url:
       from: https://ftp.pcre.org/pub/pcre/pcre-8.44.tar.gz
       to: /usr/src
-      after:
-        cmds:
-          - ./configure
-          - make
-          - make install
-        directory: /usr/src/pcre-8.44
   - url:
       from: https://github.com/libexpat/libexpat/releases/download/R_2_2_10/expat-2.2.10.tar.gz
       to: /usr/src
-      after:
-        cmds:
-          - ./configure --prefix={% installDir %}/expat
-          - make
-          - make install
-        directory: /usr/src/expat-2.2.10
   - url:
       from: http://archive.apache.org/dist/httpd/httpd-{% version %}.tar.gz
       to: /usr/src
@@ -38,13 +27,37 @@ provision:
       from: https://mirror.ibcp.fr/pub/apache//apr/apr-util-1.6.1.tar.gz
       to: /usr/src
       after: mv /usr/src/apr-util-1.6.1 /usr/src/httpd-{% version %}/srclib/apr-util
+  - url:
+      from: https://github.com/php/php-src/archive/refs/tags/php-{% phpVersion %}.tar.gz
+      to: /usr/src
 
 
 build:
+  - shell: 
+      cmds:
+        - ./configure
+        - make
+        - make install
+      directory: /usr/src/pcre-8.44
   - shell:
       cmds:
-        - ./configure --prefix={% installDir %}/{% name %} --with-included-apr --with-pcre={% installDir %}/pcre --with-expat={% installDir %}/expat
+        - ./configure --prefix={% installDir %}/expat
+        - make
+        - make install
+      directory: /usr/src/expat-2.2.10
+  - shell:
+      cmds:
+        - ./configure --prefix={% installDir %}/{% name %} --with-included-apr --with-pcre={% installDir %}/pcre --with-expat={% installDir %}/expat --with-mpm=prefork
         - make
         - make install
       directory: /usr/src/httpd-{% version %}
+  - shell:
+      cmds:
+        - ./buildconf
+        - ./configure --prefix={% installDir %}/php --with-apxs2=/usr/local/apache2/bin/apxs --with-mysqli --enable-intl --enable-mbstring --enable-soap --with-xmlrpc --with-zip --with-curl --enable-xml  --enable-gd --with-zlib
+        - make
+        - make install
+      directory: /usr/src/php-src-php-7.3.25
   - download: "{% installDir %}/{% name %}"
+  - download: "{% installDir %}/php"
+

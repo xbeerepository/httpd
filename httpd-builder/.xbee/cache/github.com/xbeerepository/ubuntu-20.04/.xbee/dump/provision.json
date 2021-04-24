@@ -1,0 +1,41 @@
+{
+    "actions": [
+        {
+            "Env": {
+                "name": "PS1",
+                "value": "[\\u@\\H \\W]\\$"
+            }
+        },
+        {
+            "Pkg": {
+                "Repository": {},
+                "names": [
+                    "curl"
+                ],
+                "update": true
+            }
+        },
+        {
+            "Shell": {
+                "cmds": [
+                    "{{ .templates }}/msg.sh"
+                ]
+            }
+        },
+        {
+            "Shell": {
+                "cmds": [
+                    "rm -f /etc/localtime && ln -sf /usr/share/zoneinfo/Europe/Paris /etc/localtime"
+                ]
+            }
+        },
+        {
+            "PersistentDirs": {},
+            "vmOnly": true
+        }
+    ],
+    "async": false,
+    "container": {
+        "create": true
+    }
+}

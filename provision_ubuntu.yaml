@@ -1,6 +1,9 @@
 labels:
   osid: ubuntu
 actions:
+  - pkg:
+      update: true 
+      name: libonig-dev libzip-dev
   - link:
       path: /lib/x86_64-linux-gnu/libpcre.so.3
       target: /lib/x86_64-linux-gnu/libpcre.so.1

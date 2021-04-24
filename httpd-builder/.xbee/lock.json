@@ -1,0 +1,14 @@
+{
+    "Ids": [
+        [
+            {
+                "version": "20.04",
+                "origin": "https://github.com/xbeerepository/ubuntu.git"
+            },
+            {
+                "version": "20.04",
+                "commit": "cf4b48c6c1ce96d7aee6151751b10ebe62be88a3"
+            }
+        ]
+    ]
+}

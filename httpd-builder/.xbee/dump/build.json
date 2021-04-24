@@ -1,0 +1,65 @@
+{
+    "actions": [
+        {
+            "Shell": {
+                "cmds": [
+                    "./configure",
+                    "make",
+                    "make install"
+                ],
+                "directory": "/usr/src/pcre-8.44"
+            }
+        },
+        {
+            "Shell": {
+                "cmds": [
+                    "./configure --prefix=/usr/local/expat",
+                    "make",
+                    "make install"
+                ],
+                "directory": "/usr/src/expat-2.2.10"
+            }
+        },
+        {
+            "Shell": {
+                "cmds": [
+                    "./configure --prefix=/usr/local/apache2 --with-included-apr --with-pcre=/usr/local/pcre --with-expat=/usr/local/expat --with-mpm=prefork",
+                    "make",
+                    "make install"
+                ],
+                "directory": "/usr/src/httpd-2.4.46"
+            }
+        },
+        {
+            "Shell": {
+                "cmds": [
+                    "./buildconf",
+                    "./configure --prefix=/usr/local/php --with-apxs2=/usr/local/apache2/bin/apxs --with-mysqli --enable-intl --enable-mbstring --enable-soap --with-xmlrpc --with-zip --with-curl --enable-xml  --enable-gd --with-zlib",
+                    "make",
+                    "make install"
+                ],
+                "directory": "/usr/src/php-src-php-7.3.25"
+            }
+        },
+        {
+            "Download": {
+                "pack": true,
+                "paths": [
+                    "/usr/local/apache2"
+                ]
+            }
+        },
+        {
+            "Download": {
+                "pack": true,
+                "paths": [
+                    "/usr/local/php"
+                ]
+            }
+        }
+    ],
+    "async": false,
+    "container": {
+        "create": true
+    }
+}
