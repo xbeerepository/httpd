@@ -1,0 +1,58 @@
+schema-version: 1.0
+
+
+type: builder
+
+description: |
+  The Apache HTTPD package contains an open-source HTTP server. It is useful for creating local intranet web sites or running huge web serving operations.
+
+  Installed Programs: ab, apachectl, apxs, checkgid, dbmmanage, fcgistarter, htcacheclean, htdbm, htdigest, htpasswd, httpd, httxt2dbm, logresolve, and rotatelogs
+  Installed Libraries: Several libraries under /usr/lib/httpd/modules/
+  Installed Directories: /etc/httpd, /srv/www, /usr/include/httpd, /usr/lib/httpd, /usr/share/httpd, /var/log/httpd, and /var/run/httpd
+  Short Descriptions
+    ab: is a tool for benchmarking your Apache HTTP server
+    apachectl: is a front end to the Apache HTTP server which is designed to help the administrator control the functioning of the Apache httpd daemon
+    apxs: is a tool for building and installing extension modules for the Apache HTTP server
+    checkgid: is a program that checks whether it can setgid to the group specified. This is to see if it is a valid group for Apache2 to use at runtime. If the user (should be run as superuser) is in that group, or can setgid to it, it will return 0
+    dbmmanage: is used to create and update the DBM format files used to store usernames and passwords for basic authentication of HTTP users
+    fcgistarter: is a tool to start a FastCGI program
+    htcacheclean: is used to clean up the disk cache
+    htdbm: is used to manipulate the DBM password databases
+    htdigest: is used to create and update the flat-files used to store usernames, realms and passwords for digest authentication of HTTP users
+    htpasswd: is used to create and update the flat-files used to store usernames and passwords for basic authentication of HTTP users
+    httpd: is the Apache HTTP server program
+    httxt2dbm: is used to generate DBM files from text, for use in RewriteMap
+    logresolve: is a post-processing program to resolve IP-addresses in Apache's access log files
+    rotatelogs: is a simple program for use in conjunction with Apache's piped log file feature
+    suexec: allows users to run CGI and SSI applications as a different user
+
+dependencies:
+  - apr
+  - apr-util
+  - pcre
+  - expat
+
+in:
+  version: 2.4.52
+
+provision:
+  - url:
+      from: https://archive.apache.org/dist/httpd/httpd-{% version %}.tar.bz2
+      todir: "{% xbeeSrc %}"
+  - url:
+      from: https://www.linuxfromscratch.org/patches/blfs/11.1/httpd-{% version %}-blfs_layout-1.patch
+      todir: "{% xbeeSrc %}"
+      unpack: false
+
+build:
+  - shell:
+      cmds:
+        - patch -Np1 -i ../httpd-2.4.52-blfs_layout-1.patch
+        - sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
+        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot=/srv/www --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
+        - make
+        - make install DESTDIR={% xbeeOut %}
+        - mv -v {% xbeeOut %}/usr/sbin/suexec {% xbeeOut %}/usr/lib/httpd/suexec
+        - chgrp {% xbeeGroup %} {% xbeeOut %}/usr/lib/httpd/suexec
+        - chmod 4754 {% xbeeOut %}/usr/lib/httpd/suexec
+      directory: "{% xbeeSrc %}/httpd-{% version %}"
