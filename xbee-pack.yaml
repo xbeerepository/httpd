@@ -1,8 +1,6 @@
 schema-version: 1.0
 
 
-type: builder
-
 description: |
   The Apache HTTPD package contains an open-source HTTP server. It is useful for creating local intranet web sites or running huge web serving operations.
 
@@ -27,6 +25,7 @@ description: |
     suexec: allows users to run CGI and SSI applications as a different user
 
 dependencies:
+  - ./httpd-builder
   - apr
   - apr-util
   - pcre
@@ -37,29 +36,13 @@ in:
   port: 8000
   documentRoot: /srv/www
 
-provision:
-  - url:
-      from: https://archive.apache.org/dist/httpd/httpd-{% version %}.tar.bz2
-      todir: "{% xbeeSrc %}"
-  - url:
-      from: https://www.linuxfromscratch.org/patches/blfs/11.1/httpd-{% version %}-blfs_layout-1.patch
-      todir: "{% xbeeSrc %}"
-      unpack: false
 
-build:
+provision:
   - shell:
       cmds:
-        - patch -Np1 -i ../httpd-2.4.52-blfs_layout-1.patch
-        - sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
-        - sed -i 's|${prefix}/var/run/httpd|${prefix}/run/httpd|g' config.layout
-        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot={% documentRoot %} --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
-        - make
-        - make install DESTDIR={% xbeeOut %}
-        - mv -v {% xbeeOut %}/usr/sbin/suexec {% xbeeOut %}/usr/lib/httpd/suexec
-        - chgrp {% xbeeGroup %} {% xbeeOut %}/usr/lib/httpd/suexec
-        - chmod 4754 {% xbeeOut %}/usr/lib/httpd/suexec
-        - sed -i 's/^User apache/User {% xbeeUser %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
-        - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
-        - sed -i 's/^Listen 80/Listen {% port %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
-        - chown {% xbeeUser %}:{% xbeeGroup %} {% xbeeOut %}/var/log/httpd
-      directory: "{% xbeeSrc %}/httpd-{% version %}"
+        - chgrp {% xbeeGroup %} /usr/lib/httpd/suexec
+        - chmod 4754 /usr/lib/httpd/suexec
+        - sed -i 's/^User apache/User {% xbeeUser %}/g' /etc/httpd/httpd.conf
+        - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' /etc/httpd/httpd.conf
+        - sed -i 's/^Listen 80/Listen {% port %}/g' /etc/httpd/httpd.conf
+        - chown {% xbeeUser %}:{% xbeeGroup %} /var/{run,log}/httpd
