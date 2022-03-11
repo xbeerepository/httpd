@@ -34,6 +34,7 @@ dependencies:
 
 in:
   version: 2.4.52
+  port: 8000
 
 provision:
   - url:
@@ -56,4 +57,7 @@ build:
         - mv -v {% xbeeOut %}/usr/sbin/suexec {% xbeeOut %}/usr/lib/httpd/suexec
         - chgrp {% xbeeGroup %} {% xbeeOut %}/usr/lib/httpd/suexec
         - chmod 4754 {% xbeeOut %}/usr/lib/httpd/suexec
+        - sed -i 's/^User apache/User {% xbeeUser %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
+        - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
+        - sed -i 's/^Listen 80/Listen {% port %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
       directory: "{% xbeeSrc %}/httpd-{% version %}"
