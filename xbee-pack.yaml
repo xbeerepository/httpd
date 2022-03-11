@@ -8,7 +8,7 @@ description: |
 
   Installed Programs: ab, apachectl, apxs, checkgid, dbmmanage, fcgistarter, htcacheclean, htdbm, htdigest, htpasswd, httpd, httxt2dbm, logresolve, and rotatelogs
   Installed Libraries: Several libraries under /usr/lib/httpd/modules/
-  Installed Directories: /etc/httpd, /srv/www, /usr/include/httpd, /usr/lib/httpd, /usr/share/httpd, /var/log/httpd, and /var/run/httpd
+  Installed Directories: /etc/httpd, {% documentRoot %}, /usr/include/httpd, /usr/lib/httpd, /usr/share/httpd, /var/log/httpd, and /var/run/httpd
   Short Descriptions
     ab: is a tool for benchmarking your Apache HTTP server
     apachectl: is a front end to the Apache HTTP server which is designed to help the administrator control the functioning of the Apache httpd daemon
@@ -35,6 +35,7 @@ dependencies:
 in:
   version: 2.4.52
   port: 8000
+  documentRoot: /srv/www
 
 provision:
   - url:
@@ -51,7 +52,7 @@ build:
         - patch -Np1 -i ../httpd-2.4.52-blfs_layout-1.patch
         - sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
         - sed -i 's|${prefix}/var/run/httpd|${prefix}/run/httpd|g' config.layout
-        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot=/srv/www --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
+        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot={% documentRoot %} --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
         - make
         - make install DESTDIR={% xbeeOut %}
         - mv -v {% xbeeOut %}/usr/sbin/suexec {% xbeeOut %}/usr/lib/httpd/suexec
@@ -60,4 +61,5 @@ build:
         - sed -i 's/^User apache/User {% xbeeUser %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
         - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
         - sed -i 's/^Listen 80/Listen {% port %}/g' {% xbeeOut %}/etc/httpd/httpd.conf
+        - chown {% xbeeUser %}:{% xbeeGroup %} {% xbeeOut %}/var/log/httpd
       directory: "{% xbeeSrc %}/httpd-{% version %}"
