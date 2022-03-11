@@ -49,6 +49,7 @@ build:
       cmds:
         - patch -Np1 -i ../httpd-2.4.52-blfs_layout-1.patch
         - sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
+        - sed -i 's|${prefix}/var/run/httpd|${prefix}/run/httpd|g' config.layout
         - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot=/srv/www --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
         - make
         - make install DESTDIR={% xbeeOut %}
