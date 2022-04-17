@@ -38,6 +38,7 @@ in:
 
 
 provision:
+  - systempath: /usr/sbin
   - shell:
       cmds:
         - chgrp {% xbeeGroup %} /usr/lib/httpd/suexec
@@ -46,3 +47,9 @@ provision:
         - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' /etc/httpd/httpd.conf
         - sed -i 's/^Listen 80/Listen {% port %}/g' /etc/httpd/httpd.conf
         - chown {% xbeeUser %}:{% xbeeGroup %} /var/{run,log}/httpd
+
+command:
+  apachectl: apachectl {{ .args }}
+
+up: apachectl start
+down: apachectl stop
