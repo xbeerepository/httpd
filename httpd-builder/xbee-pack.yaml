@@ -7,6 +7,9 @@ dependencies:
   - apr-util
   - pcre
   - expat
+
+in:
+  version:
   
 provision:
   - url:
