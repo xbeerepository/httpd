@@ -6,7 +6,7 @@ description: |
 
   Installed Programs: ab, apachectl, apxs, checkgid, dbmmanage, fcgistarter, htcacheclean, htdbm, htdigest, htpasswd, httpd, httxt2dbm, logresolve, and rotatelogs
   Installed Libraries: Several libraries under /usr/lib/httpd/modules/
-  Installed Directories: /etc/httpd, {% documentRoot %}, /usr/include/httpd, /usr/lib/httpd, /usr/share/httpd, /var/log/httpd, and /var/run/httpd
+  Installed Directories: /etc/httpd, {{ .documentRoot }}, /usr/include/httpd, /usr/lib/httpd, /usr/share/httpd, /var/log/httpd, and /var/run/httpd
   Short Descriptions
     ab: is a tool for benchmarking your Apache HTTP server
     apachectl: is a front end to the Apache HTTP server which is designed to help the administrator control the functioning of the Apache httpd daemon
@@ -24,15 +24,15 @@ description: |
     rotatelogs: is a simple program for use in conjunction with Apache's piped log file feature
     suexec: allows users to run CGI and SSI applications as a different user
 
-dependencies:
+builders:
   - ./httpd-builder
   - apr
   - apr-util
-  - pcre
+  - pcre2
   - expat
 
-in:
-  version: 2.4.52
+var:
+  version: 2.4.58
   port: 8000
   documentRoot: /srv/www
 
@@ -41,12 +41,12 @@ provision:
   - systempath: /usr/sbin
   - shell:
       cmds:
-        - chgrp {% xbeeGroup %} /usr/lib/httpd/suexec
+        - chgrp {{ .xbee.group }} /usr/lib/httpd/suexec
         - chmod 4754 /usr/lib/httpd/suexec
-        - sed -i 's/^User apache/User {% xbeeUser %}/g' /etc/httpd/httpd.conf
-        - sed -i 's/^Group apache/Group {% xbeeGroup %}/g' /etc/httpd/httpd.conf
-        - sed -i 's/^Listen 80/Listen {% port %}/g' /etc/httpd/httpd.conf
-        - chown {% xbeeUser %}:{% xbeeGroup %} /var/{run,log}/httpd
+        - sed -i 's/^User apache/User {{ .xbee.user }}/g' /etc/httpd/httpd.conf
+        - sed -i 's/^Group apache/Group {{ .xbee.group }}/g' /etc/httpd/httpd.conf
+        - sed -i 's/^Listen 80/Listen {{ .port }}/g' /etc/httpd/httpd.conf
+        - chown {{ .xbee.user }}:{{ .xbee.group }}  /var/{run,log}/httpd
 
 command:
   apachectl: apachectl {{ .args }}

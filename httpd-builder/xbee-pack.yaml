@@ -2,32 +2,33 @@ schema-version: 1.0
 
 type: builder
 
-dependencies:
+builders:
   - apr
   - apr-util
-  - pcre
+  - pcre2
   - expat
 
-in:
+var:
   version:
   
 provision:
   - url:
-      from: https://archive.apache.org/dist/httpd/httpd-{% version %}.tar.bz2
-      todir: "{% xbeeSrc %}"
+      from: https://archive.apache.org/dist/httpd/httpd-{{ .version }}.tar.bz2
+      todir: "{{ .xbee.src }}"
   - url:
-      from: https://www.linuxfromscratch.org/patches/blfs/11.1/httpd-{% version %}-blfs_layout-1.patch
-      todir: "{% xbeeSrc %}"
+      from: https://www.linuxfromscratch.org/patches/blfs/12.1/httpd-{{ .version }}-blfs_layout-1.patch
+      todir: "{{ .xbee.src }}"
       unpack: false
 
 build:
   - shell:
       cmds:
-        - patch -Np1 -i ../httpd-2.4.52-blfs_layout-1.patch
+        - patch -Np1 -i ../httpd-{{ .version }}-blfs_layout-1.patch
         - sed '/dir.*CFG_PREFIX/s@^@#@' -i support/apxs.in
-        - sed -i 's|${prefix}/var/run/httpd|${prefix}/run/httpd|g' config.layout
-        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={% xbeeUser %} --with-suexec-docroot={% documentRoot %} --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
+        - sed -e '/HTTPD_ROOT/s:${ap_prefix}:/etc/httpd:' -e '/SERVER_CONFIG_FILE/s:${rel_sysconfdir}/::' -e '/AP_TYPES_CONFIG_FILE/s:${rel_sysconfdir}/::'  -i configure
+        - sed -e '/encoding.h/a \# include <libxml/xmlstring.h>' -i modules/filters/mod_xml2enc.c
+        - ./configure --enable-authnz-fcgi --enable-layout=BLFS --enable-mods-shared='all cgi' --enable-mpms-shared=all --enable-suexec=shared --with-apr=/usr/bin/apr-1-config --with-apr-util=/usr/bin/apu-1-config --with-suexec-bin=/usr/lib/httpd/suexec --with-suexec-caller={{ .xbee.user }} --with-suexec-docroot={{ .documentRoot }} --with-suexec-logfile=/var/log/httpd/suexec.log --with-suexec-uidmin=100  --with-suexec-userdir=public_html
         - make
-        - make install DESTDIR={% xbeeOut %}
-        - mv -v {% xbeeOut %}/usr/sbin/suexec {% xbeeOut %}/usr/lib/httpd/suexec
-      directory: "{% xbeeSrc %}/httpd-{% version %}"
+        - make install DESTDIR={{ .xbee.out }}
+        - mv -v {{ .xbee.out }}/usr/sbin/suexec {{ .xbee.out }}/usr/lib/httpd/suexec
+      directory: "{{ .xbee.src }}/httpd-{{ .version }}"
